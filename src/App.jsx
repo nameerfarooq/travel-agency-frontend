@@ -3,6 +3,7 @@ import LandingPage from "./pages/LandingPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Package from "./pages/Package";
+import Login from "./pages/Login";
 const App = () => {
   return (
     <div>
@@ -12,6 +13,7 @@ const App = () => {
           <Routes>
             <Route path="/*" element={<LandingPage />} />
             <Route path="/package/:id" element={<Package />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </div>
         <Footer />
