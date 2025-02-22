@@ -8,7 +8,7 @@ const Login = () => {
   };
   return (
     <div className="flex justify-center items-center">
-      <div className="flex min-w-[280px] w-[50%] my-[30px] mx-auto flex-col gap-[30px] bg-white rounded-lg shadow-2xl p-[20px]">
+      <div className="flex min-w-[280px] w-[90%] sm:w-[40%] my-[30px] mx-auto flex-col gap-[30px] bg-white rounded-lg shadow-2xl p-[20px]">
         <p className="text-center text-2xl font-black italic bg-gradient-to-r from-blue-500 via-blue-700 to-blue-950 bg-clip-text text-transparent">
           Login as Admin
         </p>
