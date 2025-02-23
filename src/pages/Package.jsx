@@ -1,4 +1,3 @@
-// import { useParams } from "react-router-dom";
 import { ImAirplane, ImSpoonKnife } from "react-icons/im";
 import { IoIosDocument } from "react-icons/io";
 import { FaBus, FaGift } from "react-icons/fa";
@@ -7,8 +6,25 @@ import { GrSync } from "react-icons/gr";
 import { FaArrowRightLong } from "react-icons/fa6";
 
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 const Package = () => {
-  // const params = useParams();
+  const [myPackage, setmypackage] = useState("");
+
+  const params = useParams();
+  const getPackage = async () => {
+    const res = await axios.get(
+      `${
+        import.meta.env.VITE_APP_BACKEND_BASE_URL
+      }/package/get-specific-package/${params.id}`
+    );
+    setmypackage(res?.data?.existingPackage);
+    console.log("packages : ", res?.data?.existingPackage);
+  };
+
+  useEffect(() => {
+    getPackage();
+  }, []);
   const discountExpiry = new Date("2025-02-26T00:00:00").getTime();
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
@@ -41,18 +57,22 @@ const Package = () => {
   return (
     <div className="flex justify-center gap-[20px] sm:gap-[40px] px-[30px]">
       <div className="flex items-center p-4 m-4 justify-center rounded-lg bg-white shadow-2xl flex-1">
-        <img
-          className="rounded-lg"
-          src="https://plus.unsplash.com/premium_photo-1670745800247-271e8977da41?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8bWFkaW5haHxlbnwwfHwwfHx8MA%3D%3D"
-          alt=""
-        />
+        <img className="rounded-lg" src={myPackage.image} alt="" />
       </div>
       <div className="flex flex-col gap-[30px] rounded-lg flex-1 py-[30px]">
         <p className="text-[42px] font-black italic bg-gradient-to-r from-blue-500 via-blue-700 to-blue-950 bg-clip-text text-transparent">
-          Umrah Gold Package
+          {myPackage?.name}
         </p>
         <p className="rounded-full bg-gradient-to-r   from-blue-700 to-blue-950 w-full text-center py-[5px] px-[20px]  text-white text-[32px]  font-black italic ">
-          PKR 2,90,000 <strike className="text-[22px]">PKR 3,20,000</strike>
+          PKR{" "}
+          {myPackage?.isDiscountValid
+            ? Number(myPackage?.price) -
+              (Number(myPackage?.price) / 100) *
+                Number(myPackage?.discountPercentage)
+            : myPackage?.price}
+          {myPackage?.isDiscountValid && (
+            <strike className="text-[22px]">PKR {myPackage?.price}</strike>
+          )}
         </p>
         {timeLeft && (
           <div className="text-center bg-red-700 text-white font-bold italic rounded-full py-2 px-4 z-10 shadow-md text-sm">
@@ -97,7 +117,7 @@ const Package = () => {
             <FaArrowRightLong />
 
             <p className=" border-black border-2 rounded-full py-[2px] px-[10px] bg-black text-white">
-              Al Arab Hotel
+              {myPackage?.hotels?.length > 0 && myPackage?.hotels[0]}
             </p>
           </div>
           <div className="flex items-center gap-[10px]">
@@ -107,11 +127,11 @@ const Package = () => {
             <FaArrowRightLong />
 
             <p className=" border-black border-2 rounded-full py-[2px] px-[10px] bg-black text-white">
-              Al Arab Hotel
+              {myPackage?.hotels?.length > 1 && myPackage?.hotels[1]}
             </p>
           </div>
         </div>
-          <p>For more details contact us @ 03352418380</p>
+        <p>For more details contact us @ 03352418380</p>
       </div>
     </div>
   );

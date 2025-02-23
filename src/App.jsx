@@ -5,9 +5,13 @@ import Footer from "./components/Footer";
 import Package from "./pages/Package";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import { ToastContainer } from "react-toastify";
+
 const App = () => {
   return (
     <div>
+      <ToastContainer />
+
       <BrowserRouter>
         <Header />
         <div className="w-full min-h-[69vh]">

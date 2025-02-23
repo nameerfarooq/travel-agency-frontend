@@ -1,10 +1,35 @@
+import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
+  const [loading, setloading] = useState(false);
+  const navigate = useNavigate();
   const doLogin = async () => {
-    console.log("LOGIN");
+    setloading(true);
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_APP_BACKEND_BASE_URL}/user/login`,
+        {
+          email,
+          password,
+        }
+      );
+      console.log("res user: ", res.data.existingUser);
+      console.log("res token: ", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.existingUser));
+      localStorage.setItem("token", res.data.token);
+      toast.success("Success");
+      navigate("/dashboard");
+    } catch (error) {
+      console.log("doLogin :", error);
+      setloading(false);
+      toast.error("Something went wrong");
+    }
+    setloading(false);
   };
   return (
     <div className="flex justify-center items-center">
@@ -41,7 +66,7 @@ const Login = () => {
             onClick={doLogin}
             className="rounded-full bg-gradient-to-r from-blue-700 to-blue-950  text-center py-[5px] px-[20px]  text-white font-bold cursor-pointer w-max mx-auto"
           >
-            Login
+            {loading ? "loading..." : "Login"}
           </p>
         </form>
       </div>

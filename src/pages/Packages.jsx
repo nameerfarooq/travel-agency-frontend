@@ -1,11 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GradientButton from "../components/GradientButton";
 import { GiCancel } from "react-icons/gi";
 import { MdDelete } from "react-icons/md";
+import Switch from "react-switch";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Packages = () => {
   const [showAddInfoPopUp, setshowAddInfoPopUp] = useState(false);
-
+  const [isDiscoundValid, setisDiscoundValid] = useState(false);
+  const [categories, setcategories] = useState([]);
+  const getAllCategories = async () => {
+    try {
+      const res = await axios.get(
+        `${
+          import.meta.env.VITE_APP_BACKEND_BASE_URL
+        }/category/get-all-categories`
+      );
+      setcategories(res?.data?.categories);
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+  };
+  useEffect(() => {
+    getAllCategories();
+  }, []);
   return (
     <div className="p-4 w-full">
       <div className="flex flex-col gap-[30px] w-full">
@@ -89,27 +109,32 @@ const Packages = () => {
               </div>
               <div className="flex flex-col gap-[10px]">
                 <p className="font-bold">Discount Valid ?</p>
-                <input
-                  type="text"
-                  placeholder="Discound is valid?"
-                  className="bg-sky-100 py-[10px] px-[15px] outline-none text-black"
+                <Switch
+                  onChange={() => {
+                    setisDiscoundValid(!isDiscoundValid);
+                  }}
+                  checked={isDiscoundValid}
                 />
               </div>
-              <div className="flex flex-col gap-[10px]">
-                <p className="font-bold">Discount Percentage</p>
-                <input
-                  type="text"
-                  placeholder="Enter your package's discount percentage"
-                  className="bg-sky-100 py-[10px] px-[15px] outline-none text-black"
-                />
-              </div>
-              <div className="flex flex-col gap-[10px]">
-                <p className="font-bold">Discount Validity</p>
-                <input
-                  type="date"
-                  className="bg-sky-100 py-[10px] px-[15px] outline-none text-black"
-                />
-              </div>
+              {isDiscoundValid && (
+                <>
+                  <div className="flex flex-col gap-[10px]">
+                    <p className="font-bold">Discount Percentage</p>
+                    <input
+                      type="text"
+                      placeholder="Enter your package's discount percentage"
+                      className="bg-sky-100 py-[10px] px-[15px] outline-none text-black"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-[10px]">
+                    <p className="font-bold">Discount Validity</p>
+                    <input
+                      type="date"
+                      className="bg-sky-100 py-[10px] px-[15px] outline-none text-black"
+                    />
+                  </div>
+                </>
+              )}
               <div className="flex flex-col gap-[10px]">
                 <p className="font-bold">Package Features</p>
                 <div className="flex items-center gap-[6px]">
@@ -197,8 +222,11 @@ const Packages = () => {
                   className="bg-sky-100 py-[10px] px-[15px] outline-none text-black"
                 >
                   <option value="">Select</option>
-                  <option value="Hajj">Hajj</option>
-                  <option value="Umrah">Umrah</option>
+                  {categories.map((category) => (
+                    <option key={category._id} value={category}>
+                      {category.title}
+                    </option>
+                  ))}
                 </select>
               </div>
 

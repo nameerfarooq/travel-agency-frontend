@@ -1,31 +1,51 @@
+import { useEffect, useState } from "react";
 import CategoryCard from "../components/CategoryCard";
 import PackageCard from "../components/PackageCard";
 import Slider from "../components/Slider";
+import axios from "axios";
 
 const LandingPage = () => {
+  const [webInfo, setwebInfo] = useState("");
+  const [allCategories, setallCategories] = useState("");
+  const [packages, setpackages] = useState("");
+  const getWebInfo = async () => {
+    const res = await axios.get(
+      `${import.meta.env.VITE_APP_BACKEND_BASE_URL}/web-info/get-web-info`
+    );
+
+    setwebInfo(res?.data?.webInfo);
+  };
+  const getAllCategories = async () => {
+    const res = await axios.get(
+      `${import.meta.env.VITE_APP_BACKEND_BASE_URL}/category/get-all-categories`
+    );
+    setallCategories(res?.data?.categories);
+  };
+
+  const getAllPackages = async () => {
+    const res = await axios.get(
+      `${import.meta.env.VITE_APP_BACKEND_BASE_URL}/package/get-all-packages`
+    );
+    setpackages(res?.data?.packages);
+    console.log("packages : ", res?.data?.packages);
+  };
+
+  useEffect(() => {
+    getWebInfo();
+    getAllCategories();
+    getAllPackages();
+  }, []);
+
   return (
     <div className="flex flex-col gap-[40px] px-[20px] pb-[40px]">
       <div className="flex w-[80%] mx-auto my-[20px] rounded-lg">
-        <Slider />
+        <Slider images={webInfo?.sliderImages} />
       </div>
       <div className="flex flex-col justify-center items-center gap-[30px]">
         <p className="bg-gradient-to-r from-blue-500 via-blue-700 to-blue-950 bg-clip-text text-transparent font-black italic text-[36px]">
           Madina Travels
         </p>
-        <p className="text-center sm:w-[80%]">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi totam ea
-          itaque maiores non, officia aspernatur, ipsam id vero voluptatum quod
-          ipsa alias recusandae dolorum laborum impedit quos doloremque harum.
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi totam ea
-          itaque maiores non, officia aspernatur, ipsam id vero voluptatum quod
-          ipsa alias recusandae dolorum laborum impedit quos doloremque harum.
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi totam ea
-          itaque maiores non, officia aspernatur, ipsam id vero voluptatum quod
-          ipsa alias recusandae dolorum laborum impedit quos doloremque harum.
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi totam ea
-          itaque maiores non, officia aspernatur, ipsam id vero voluptatum quod
-          ipsa alias recusandae dolorum laborum impedit quos doloremque harum.
-        </p>
+        <p className="text-center sm:w-[80%]">{webInfo?.description}</p>
       </div>
       <div className="flex flex-col justify-center items-center gap-[30px]">
         <p
@@ -34,10 +54,14 @@ const LandingPage = () => {
         >
           Our Services
         </p>
-        <div className="flex items-center justify-center gap-5">
-          <CategoryCard title={"Hajj"} />
-          <CategoryCard title={"Umrah"} />
-          <CategoryCard title={"Tour"} />
+        <div className="flex items-center justify-center gap-5 flex-wrap">
+          {allCategories.length > 0 && (
+            <>
+              {allCategories.map((category) => (
+                <CategoryCard key={category._id} title={category.title} />
+              ))}
+            </>
+          )}
         </div>
       </div>
       <div className="flex flex-col justify-center items-center gap-[30px]">
@@ -48,10 +72,13 @@ const LandingPage = () => {
           Our Packages
         </p>
         <div className="flex items-center justify-center gap-[40px] flex-wrap">
-          <PackageCard />
-          <PackageCard />
-          <PackageCard />
-          <PackageCard />
+          {packages.length > 0 && (
+            <>
+              {packages.map((packageItem) => (
+                <PackageCard key={packageItem._id} packageDetails={packageItem}/>
+              ))}
+            </>
+          )}
         </div>
       </div>
       <div className="flex flex-col justify-center items-center gap-[30px]">
@@ -68,7 +95,7 @@ const LandingPage = () => {
             height="600"
             allowfullscreen=""
             loading="lazy"
-            ></iframe>
+          ></iframe>
         </div>
       </div>
     </div>
